@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 DATABASE = os.path.join(os.path.dirname(__file__), 'calories_calculator.db')
-
+print(DATABASE)
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -120,36 +120,12 @@ def signup():
         password = request.form['password']
         hashed_password = generate_password_hash(password)
         try:
-            # First check if database exists and is accessible
-            if not os.path.exists(DATABASE):
-                print(f"Database does not exist at {DATABASE}")
-                setup()
-                print("Database setup completed")
-            
             db = get_db()
-            print(f"Database connection established")
-            
-            with db:  # This ensures proper transaction handling
-                cursor = db.cursor()
-                cursor.execute('SELECT name FROM sqlite_master WHERE type="table" AND name="users"')
-                if not cursor.fetchone():
-                    print("Users table does not exist, running setup")
-                    setup()
-                
-                cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', 
-                          (username, hashed_password))
-                db.commit()
-                print(f"User {username} successfully created")
-            
+            db.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
+            db.commit()
             return redirect(url_for('login'))
-        except sqlite3.IntegrityError as e:
-            print(f"IntegrityError during signup: {str(e)}")
+        except sqlite3.IntegrityError:
             return 'Username already exists', 409
-        except Exception as e:
-            import traceback
-            print(f"Signup error: {str(e)}")
-            print(f"Full traceback: {traceback.format_exc()}")
-            return f'An error occurred during signup: {str(e)}', 500
     return render_template('signup.html')
 
 @app.route('/food-suggestions')
@@ -307,11 +283,6 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    with app.app_context():
-        setup()
+    setup()
+    # seed_food_data()
     app.run(debug=False)
-else:
-    # Ensure database is setup when running on Vercel
-    with app.app_context():
-        if not os.path.exists(DATABASE):
-            setup()
