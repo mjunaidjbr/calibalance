@@ -2,10 +2,11 @@ from flask import Flask, render_template, redirect, url_for, request, session, g
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from datetime import datetime, timedelta
-
+import os
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
-DATABASE = 'calories_calculator.db'
+DATABASE = os.path.join(os.path.dirname(__file__), 'calories_calculator.db')
+
 
 def get_db():
     db = getattr(g, '_database', None)
