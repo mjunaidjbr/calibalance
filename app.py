@@ -1,17 +1,24 @@
 from flask import Flask, render_template, redirect, url_for, request, session, g, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-import sqlite3
+import sqlitecloud
 from datetime import datetime, timedelta
 import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
+
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
-DATABASE = os.path.join(os.path.dirname(__file__), 'calories_calculator.db')
-print(DATABASE)
+# DATABASE = os.path.join(os.path.dirname(__file__), 'calories_calculator.db')
+# print(DATABASE)
 
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
+        connection_string = os.getenv('SQLITECLOUD_CONNECTION_STRING')
+        if not connection_string:
+            raise ValueError("SQLITECLOUD_CONNECTION_STRING environment variable is not set")
+        db = g._database = sqlitecloud.connect(connection_string)
     return db
 
 @app.teardown_appcontext
@@ -29,31 +36,21 @@ def query_db(query, args=(), one=False):
 def setup():
     with app.app_context():
         db = get_db()
-        db.execute('''CREATE TABLE IF NOT EXISTS users (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        username TEXT UNIQUE NOT NULL,
-                        password TEXT NOT NULL
-                      )''')
-        db.execute('''CREATE TABLE IF NOT EXISTS calories (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        user_id INTEGER,
-                        date DATE,
-                        daily_calories INTEGER,
-                        consumed_calories INTEGER,
-                        FOREIGN KEY (user_id) REFERENCES users (id)
-                      )''')
-        # db.execute('''DROP TABLE IF EXISTS food''')
-        # db.execute('''CREATE TABLE IF NOT EXISTS food (
-        #                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-        #                 name TEXT NOT NULL,
-        #                 calories INTEGER NOT NULL,
-        #                 protein INTEGER,
-        #                 carbs INTEGER,
-        #                 fats INTEGER,
-        #                 category TEXT,
-        #                 image_url TEXT,
-        #                 description TEXT
-        #               )''')
+        # Create the food table first
+        db.execute('''CREATE TABLE IF NOT EXISTS food (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    calories INTEGER NOT NULL,
+                    protein INTEGER,
+                    carbs INTEGER,
+                    fats INTEGER,
+                    category TEXT,
+                    image_url TEXT,
+                    description TEXT
+                  )''')
+        db.commit()  # Commit the table creation
+
+        # Now insert the food data
         db.execute('''INSERT INTO food (name, calories, protein, carbs, fats, category, image_url, description)
                VALUES
                ('Grilled Chicken Breast', 165, 31, 0, 3.6, 'Protein', 'grilled-chicken.jpg', 'A high-protein, low-fat meal perfect for muscle building and weight management.'),
@@ -80,8 +77,22 @@ def setup():
                ('Almond Butter Banana Toast', 280, 7, 35, 14, 'Snack', 'almond-butter-toast.jpg', 'A satisfying snack with a balance of healthy fats, fiber, and natural sweetness.'),
                ('Grilled Zucchini and Quinoa Bowl', 300, 12, 40, 8, 'Vegetarian', 'zucchini-quinoa-bowl.jpg', 'A wholesome bowl with grilled zucchini, quinoa, and a light dressing.')
             ''')
+        db.commit()  # Commit the data insertion
 
-
+        # Create other tables
+        db.execute('''CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT UNIQUE NOT NULL,
+                    password TEXT NOT NULL
+                  )''')
+        db.execute('''CREATE TABLE IF NOT EXISTS calories (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER,
+                    date DATE,
+                    daily_calories INTEGER,
+                    consumed_calories INTEGER,
+                    FOREIGN KEY (user_id) REFERENCES users (id)
+                  )''')
         db.commit()
 
 
@@ -124,7 +135,7 @@ def signup():
             db.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
             db.commit()
             return redirect(url_for('login'))
-        except sqlite3.IntegrityError:
+        except sqlitecloud.IntegrityError:
             return 'Username already exists', 409
     return render_template('signup.html')
 
