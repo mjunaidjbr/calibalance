@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Signup</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Calc-style.css') }}">
+</head>
+
+<body>
+    <div class="ms-cl" id="ms_cl">
+        <div class="container cl-wrapper main-calc">
+            <div class="navbar-wrapper">
+                <div class="row align-items-center d-flex">
+                    <!-- Logo Section -->
+                    <div class="col-md-3 d-flex justify-content-start">
+                        <img class="logo img-fluid" src="{{ url_for('static', filename='assets/logo-no-bg.png') }}" alt="Logo">
+                    </div>
+                    
+                    <!-- Navbar Section -->
+                    <div class="col-md-9">
+                        <nav>
+                            <ul class="d-flex justify-content-end flex-nowrap"> <!-- Changed justify-content-center to justify-content-end -->
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/login">Login</a></li>
+                                <li><a href="/signup">Signup</a></li>
+                                <li><a href="/food-suggestions">Food Suggestions</a></li>
+                                <li><a href="/calories-adjustments">Calories Adjustments</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+    <div class="container">
+        <h2 class="text-center mt-5">Signup</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Signup</button>
+                </form>
+                <p class="text-center mt-3"><a href="/login">Already have an account? Login</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

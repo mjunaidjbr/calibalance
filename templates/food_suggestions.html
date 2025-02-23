@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Food Suggestions</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Calc-style.css') }}">
+</head>
+
+<body>
+    <div class="ms-cl" id="ms_cl">
+        <div class="container cl-wrapper main-calc">
+            <div class="navbar-wrapper">
+                <div class="row align-items-center d-flex">
+                    <!-- Logo Section -->
+                    <div class="col-md-3 d-flex justify-content-start">
+                        <img class="logo img-fluid" src="{{ url_for('static', filename='assets/logo-no-bg.png') }}" alt="Logo">
+                    </div>
+                    
+                    <!-- Navbar Section -->
+                    <div class="col-md-9">
+                        <nav>
+                            <ul class="d-flex justify-content-end flex-nowrap"> <!-- Changed justify-content-center to justify-content-end -->
+                                <ul class="d-flex justify-content-end flex-nowrap">
+                                    <li><a href="/">Home</a></li>
+                                    <li><a href="/food-suggestions">Food Suggestions</a></li>
+                                    <li><a href="/calories-adjustments">Calories Adjustments</a></li>
+                                    {% if 'username' in session %}
+                                        <li><a href="/logout">Logout</a></li>
+                                    {% else %}
+                                        <li><a href="/login">Login</a></li>
+                                        <li><a href="/signup">Signup</a></li>
+                                    {% endif %}
+                                </ul>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <h2 class="text-center mt-5">Food Suggestions</h2>
+                <div class="row">
+                    {% for day in range(1, 8) %}
+                        <div class="col-12">
+                            <h3 class="text-center mt-4">Day {{ day }}</h3>
+                        </div>
+            
+                        {% set index = (day - 1) * 3 %}  <!-- 3 meals per day -->
+            
+                        <!-- Breakfast -->
+                        {% if index < food_items|length %}
+                            <div class="col-md-4 d-flex align-items-stretch">
+                                <div class="card h-100">
+                                    <img src="{{ url_for('static', filename='assets/' + food_items[index]['image_url']) }}" class="card-img-top" alt="{{ food_items[index]['name'] }}">
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">Day {{ day }} - Breakfast</h5>
+                                        <h5 class="card-title">{{ food_items[index]['name'] }}</h5>
+                                        <!-- <strong>Calories: {{ food_items[index]['saved_calories'] }}</strong> -->
+                                        <p style="margin: 2px 0;">Protein: {{ food_items[index]['protein'] }}</p>
+                                        <p style="margin: 2px 0;">Carbs: {{ food_items[index]['carbs'] }}</p>
+                                        <p style="margin: 2px 0;">Fats: {{ food_items[index]['fats'] }}</p>
+                                        <!-- <p class="card-text flex-grow-1">{{ food_items[index]['description'] }}</p> -->
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+            
+                        <!-- Lunch -->
+                        {% if index + 1 < food_items|length %}
+                            <div class="col-md-4 d-flex align-items-stretch">
+                                <div class="card h-100">
+                                    <img src="{{ url_for('static', filename='assets/' + food_items[index + 1]['image_url']) }}" class="card-img-top" alt="{{ food_items[index + 1]['name'] }}">
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">Day {{ day }} - Lunch</h5>
+                                        <h5 class="card-title">{{ food_items[index + 1]['name'] }}</h5>
+                                        <!-- <strong>Calories: {{ food_items[index + 1]['saved_calories'] }}</strong> -->
+                                        <p style="margin: 2px 0;">Protein: {{ food_items[index + 1]['protein'] }}</p>
+                                        <p style="margin: 2px 0;">Carbs: {{ food_items[index + 1]['carbs'] }}</p>
+                                        <p style="margin: 2px 0;">Fats: {{ food_items[index + 1]['fats'] }}</p>
+                                        <!-- <p class="card-text flex-grow-1">{{ food_items[index + 1]['description'] }}</p> -->
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+            
+                        <!-- Dinner -->
+                        {% if index + 2 < food_items|length %}
+                            <div class="col-md-4 d-flex align-items-stretch">
+                                <div class="card h-100">
+                                    <img src="{{ url_for('static', filename='assets/' + food_items[index + 2]['image_url']) }}" class="card-img-top" alt="{{ food_items[index + 2]['name'] }}">
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">Day {{ day }} - Dinner</h5>
+                                        <h5 class="card-title">{{ food_items[index + 2]['name'] }}</h5>
+                                        <!-- <strong>Calories: {{ food_items[index + 2]['saved_calories'] }}</strong> -->
+                                        <p style="margin: 2px 0;">Protein: {{ food_items[index + 2]['protein'] }}</p>
+                                        <p style="margin: 2px 0;">Carbs: {{ food_items[index + 2]['carbs'] }}</p>
+                                        <p style="margin: 2px 0;">Fats: {{ food_items[index + 2]['fats'] }}</p>
+                                        <!-- <p class="card-text flex-grow-1">{{ food_items[index + 2]['description'] }}</p> -->
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            
+</div>
+</body>
+
+</html>

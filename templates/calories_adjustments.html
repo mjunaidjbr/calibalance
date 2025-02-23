@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Calories Adjustments</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Calc-style.css') }}">
+</head>
+
+<body>
+    <div class="ms-cl" id="ms_cl">
+        <div class="container cl-wrapper main-calc">
+            <div class="navbar-wrapper">
+                <div class="row align-items-center d-flex">
+                    <!-- Logo Section -->
+                    <div class="col-md-3 d-flex justify-content-start">
+                        <img class="logo img-fluid" src="{{ url_for('static', filename='assets/logo-no-bg.png') }}" alt="Logo">
+                    </div>
+                    
+                    <!-- Navbar Section -->
+                    <div class="col-md-9">
+                        <nav>
+                            <ul class="d-flex justify-content-end flex-nowrap"> <!-- Changed justify-content-center to justify-content-end -->
+                                <ul class="d-flex justify-content-end flex-nowrap">
+                                    <li><a href="/">Home</a></li>
+                                    <li><a href="/food-suggestions">Food Suggestions</a></li>
+                                    <li><a href="/calories-adjustments">Calories Adjustments</a></li>
+                                    {% if 'username' in session %}
+                                        <li><a href="/logout">Logout</a></li>
+                                    {% else %}
+                                        <li><a href="/login">Login</a></li>
+                                        <li><a href="/signup">Signup</a></li>
+                                    {% endif %}
+                                </ul>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+    <div class="container">
+        <h2 class="text-center mt-5">Calories Adjustments</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="consumed_calories">Calories Consumed Today</label>
+                        <input type="number" class="form-control" id="consumed_calories" name="consumed_calories" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Calculate</button>
+                </form>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Daily Suggested Calories</th>
+                            <th>Consumed Calories</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in records %}
+                        <tr>
+                            <td>{{ record[1] }}</td> <!-- Date -->
+                            <td>{{ record[2]-record[3] }}</td> <!-- Daily Calories -->
+                            <td>{{ record[3] }}</td> <!-- Consumed Calories -->
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
