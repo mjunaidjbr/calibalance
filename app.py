@@ -283,6 +283,11 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    setup()
-    # seed_food_data()
+    with app.app_context():
+        setup()
     app.run(debug=False)
+else:
+    # Ensure database is setup when running on Vercel
+    with app.app_context():
+        if not os.path.exists(DATABASE):
+            setup()
